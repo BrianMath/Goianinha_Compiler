@@ -33,7 +33,7 @@ programa {
 
 	escreva "O fatorial de ";
 	escreva n;
-    escreva " e: ";
+	escreva " e: ";
 	escreva fatorial(n);
 	novalinha;
 }
