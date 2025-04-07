@@ -7,7 +7,7 @@ A linguagem Goianinha é uma linguagem de programação simples (um subconjunto 
 
 ## Progresso
 O compilador consiste em 3 partes:
-- 🔁 Analisador Léxico e Tabela de Símbolos
+- ✅ Analisador Léxico e Tabela de Símbolos
 - ⬜️ Analisador Sintático e Tratamento de Erros
 - ⬜️ Analisador Semântico e Geração de Código
 

@@ -1,56 +1,68 @@
-#include "SymbolTableStack.hpp"
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
+#include "include/FlexLexer.h"
+#include "include/Tokens.hpp"
+#include "include/Errors.hpp"
 
-int main() {
-	SymbolTableStack stack;
-	// Global scope
-	stack.createScope();
+int main(int argc, char *argv[]) {
+	if (argc < 2) {
+		std::cerr << "Uso esperado:\n\t" << argv[0] << " <arquivo_goianinha>\n";
+		return EXIT_FAILURE;
+	}
 
-	stack.addVar("x", INT, 0);
-	stack.addVar("y", INT, 1);
-	stack.addVar("z", INT, 2);
+	// Open the little goiânia file
+	std::ifstream input_file(argv[1]);
+	if (!input_file.is_open()) {
+		std::cerr << "Erro: não foi possível abrir o arquivo " << argv[1] << '\n';
+		return EXIT_FAILURE;
+	}
 
-	SymTable* scope = stack.searchName("y");
-	std::cout << "z: " << std::get<Variable>(scope->find("z")->second).varType << '\n';
+	yyFlexLexer lexer(&input_file);
+	
+	int token;
+	while ((token = lexer.yylex()) != END) {
+		if (token == UNTERMINATED_COMMENT) {
+			std::cout << "ERRO: COMENTÁRIO NÃO TERMINA na linha " << lexer.lineno() << '\n';
+			return EXIT_FAILURE;
+		};
 
-	stack.addFunc("fatorial", INT, 1);
-	scope = stack.searchName("fatorial");
-	stack.addParam("n", INT, 0, scope);
-	stack.addVar("x", CAR, 0);
-	stack.addVar("y", CAR, 1);
+		// Comentar depois de pronto
+		// if (token == INVALID_NUMBER) {
+		// 	int number = atoi(lexer.YYText());
+		// 	std::cout << "Número inválido: " << number << '\n';
+		// 	continue;
+		// }
 
-	scope = stack.searchName("n");
-	std::cout << "n: " << std::get<Parameter>(scope->find("n")->second).paramType << '\n';
+		if (token == INVALID_CHARACTER) {
+			std::cout << "ERRO: CARACTERE INVÁLIDO na linha " << lexer.lineno() << '\n';
+			std::cout << "Lexema '" << lexer.YYText() << "'\n";
+			return EXIT_FAILURE;
+		}
 
-	scope = stack.searchName("n");
-	std::cout << "scope: " << scope << '\n';
-	std::cout << "scope: " << std::get<Parameter>(scope->find("n")->second).funcScope << '\n';
-	scope = std::get<Parameter>(scope->find("n")->second).funcScope;
-	std::cout << "scope: " << std::get<Parameter>(scope->find("n")->second).funcScope << '\n';
-	std::cout << "y fora: " << std::get<Variable>(scope->find("y")->second).varType << '\n';
+		if (token == INVALID_STRING) {
+			std::cout << "ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " << lexer.lineno()-1 << '\n';
+			return EXIT_FAILURE;
+		}
 
-	stack.createScope();
-	// scope = stack.searchName("n");
-	std::cout << "scope: " << scope << '\n';
-	std::cout << "y dentro: " << std::get<Variable>(scope->find("y")->second).varType << '\n';
-	stack.deleteScope();
+		if (token == UNTERMINATED_STRING) {
+			std::cout << "ERRO: CADEIA DE CARACTERES NÃO TERMINA na linha " << lexer.lineno() << '\n';
+			return EXIT_FAILURE;
+		}
 
-	std::cout << "y fora: " << std::get<Variable>(scope->find("y")->second).varType << '\n';
+		std::cout << "Encontrado o lexema " << lexer.YYText()
+				  << " pertencente ao token de codigo " << tokenNames[token] 
+				  << " linha " << lexer.lineno() << '\n';
 
-	scope = stack.searchName("y");
-	std::cout << "y: " << std::get<Variable>(scope->find("y")->second).varType << '\n';
+		//  std::cout << "Lexema '" << lexer.YYText()
+		//  		  << "' -> " << tokenNames[token] 
+		//  		  << " | linha " << lexer.lineno() << '\n';
+    }
+	
+	// std::cout << "\ntchau\n";
 
-	scope = stack.searchName("n");
-	std::cout << "x: " << std::get<Variable>(scope->find("x")->second).varType << '\n';
-
-	scope = stack.searchName("z");
-	std::cout << "z: " << std::get<Variable>(scope->find("z")->second).varType << '\n';
-
-	scope = stack.searchName("fatorial");
-	std::cout << "fatorial: " << std::get<Function>(scope->find("fatorial")->second).returnType << '\n';
-
-	stack.deleteScope();
-
-	std::cout << "Olá, mundo!\n";
+	// Close the little goiânia file
+	input_file.close();
 
 	return 0;
 }

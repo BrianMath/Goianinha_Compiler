@@ -2,3 +2,8 @@ pdfs/
 tests/
 lexico/
 .vscode/
+
+# Arquivos do flex
+lex.yy.cc
+goianinha
+main

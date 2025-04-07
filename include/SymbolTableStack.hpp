@@ -1,5 +1,5 @@
-#ifndef SYMBOL_TABLE_STACK_H
-#define SYMBOL_TABLE_STACK_H
+#ifndef SYMBOL_TABLE_STACK_HPP
+#define SYMBOL_TABLE_STACK_HPP
 
 #include <iostream>
 #include <variant>
@@ -15,17 +15,17 @@ enum Type {
 
 struct Variable {
 	Type varType;
-	uint varDeclPos;
+	uint32_t varDeclPos;
 };
 
 struct Function {
 	Type returnType;
-	uint numParams;
+	uint32_t numParams;
 };
 
 struct Parameter {
 	Type paramType;
-	uint paramPos;
+	uint32_t paramPos;
 	std::map<std::string, std::variant<Variable, Function, Parameter>>* funcScope;
 };
 
@@ -47,9 +47,9 @@ class SymbolTableStack {
 
 		void createScope();
 		void deleteScope();
-		void addVar(std::string varName, Type varType, uint varDeclPos);
-		void addFunc(std::string funcName, Type returnType, uint numParams);
-		void addParam(std::string paramName, Type paramType, uint paramPos, SymTable* funcScope);
+		void addVar(std::string varName, Type varType, uint32_t varDeclPos);
+		void addFunc(std::string funcName, Type returnType, uint32_t numParams);
+		void addParam(std::string paramName, Type paramType, uint32_t paramPos, SymTable* funcScope);
 		SymTable* searchName(std::string);
 };
 
