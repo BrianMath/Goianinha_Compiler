@@ -12,10 +12,10 @@ lex.yy.cc: goianinha.l
 
 # Regra para compilar o executável principal
 main: Main.cpp src/Tokens.cpp lex.yy.cc
-	$(CXX) $(CXXFLAGS) Main.cpp src/Tokens.cpp lex.yy.cc -o main
+	$(CXX) $(CXXFLAGS) Main.cpp src/Tokens.cpp lex.yy.cc -o goianinha
 
 run: main
-	./main tests/goianinha.g
+	./goianinha tests/goianinha.g
 
 clean:
-	rm -f lex.yy.cc main
+	rm -f lex.yy.cc goianinha

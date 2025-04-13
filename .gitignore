@@ -7,3 +7,9 @@ lexico/
 lex.yy.cc
 goianinha
 main
+
+# Pastas/arquivos para entregar a tarefa
+T1
+T1.zip
+01_tabela_de_simbolos
+02_analisador_lexico
