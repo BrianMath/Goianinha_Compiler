@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (token == INVALID_STRING) {
-			std::cout << "ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " << lexer.lineno()-1 << '\n';
+			std::cout << "ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " << lexer.lineno() << '\n';
 			return EXIT_FAILURE;
 		}
 
