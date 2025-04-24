@@ -69,6 +69,7 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 ";"			{ return SEMICOLON; }
 "/"			{ return SLASH; }
 "*"			{ return STAR; }
+"!"			{ return BANG; }
 "!="		{ return BANG_EQUAL; }
 "="			{ return EQUAL; }
 "=="		{ return EQUAL_EQUAL; }
