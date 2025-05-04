@@ -1,5 +1,4 @@
 pdfs/
-tests/
 lexico/
 .vscode/
 
@@ -7,6 +6,10 @@ lexico/
 lex.yy.cc
 goianinha
 main
+
+# Arquivos do bison
+goianinha.tab.*
+goianinha.png
 
 # Pastas/arquivos para entregar a tarefa
 T1

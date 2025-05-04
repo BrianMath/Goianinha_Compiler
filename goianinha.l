@@ -1,13 +1,34 @@
 %{
 	#include <iostream>
 	#include <stdlib.h>
-	#include "include/Tokens.hpp"
-	#include "include/Errors.hpp"
+	#include <map>
+	#include <string>
+	#include "../include/goianinha.tab.hh"
+
+	using namespace yy;
+
+	std::map<std::string, parser::token_kind_type> keywords = {
+		{"programa", parser::token::PROGRAMA},
+		{"car", parser::token::CAR},
+		{"int", parser::token::INT},
+		{"novalinha", parser::token::NOVALINHA},
+		{"leia", parser::token::LEIA},
+		{"escreva", parser::token::ESCREVA},
+		{"execute", parser::token::EXECUTE},
+		{"retorne", parser::token::RETORNE},
+		{"se", parser::token::SE},
+		{"entao", parser::token::ENTAO},
+		{"senao", parser::token::SENAO},
+		{"enquanto", parser::token::ENQUANTO},
+		{"ou", parser::token::OU},
+		{"e", parser::token::E}
+	};
 %}
 
 %option c++
 %option noyywrap
 %option yylineno
+%option outfile="src/lex.yy.cc"
 
 VALID_NUMBER	-?[0-9][0-9]*|0
 	/*INVALID_NUMBER	-?0[0-9]+*/
@@ -25,11 +46,11 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 {VALID_COMMENT} /* Ignore comments */
 
 {INVALID_COMMENT} {
-	return UNTERMINATED_COMMENT;
+	return parser::token::UNTERMINATED_COMMENT;
 }
 
 {VALID_NUMBER} {
-	return INTCONST;
+	return parser::token::INTCONST;
 }
 
 	/*{INVALID_NUMBER} {
@@ -37,15 +58,15 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 	}*/
 
 {VALID_STRING} {
-	return STRING;
+	return parser::token::STRING;
 }
 
 {INVALID_STRING} {
-	return INVALID_STRING;
+	return parser::token::INVALID_STRING;
 }
 
 {NO_END_STRING} {
-	return UNTERMINATED_STRING;
+	return parser::token::UNTERMINATED_STRING;
 }
 
 {ID} {
@@ -55,32 +76,32 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 		return search->second;
 	} else {
 		/* not a keyword */
-		return ID;
+		return parser::token::ID;
 	}
 }
 
-"("			{ return LEFT_PAREN; }
-")"			{ return RIGHT_PAREN; }
-"{"			{ return LEFT_BRACE; }
-"}"			{ return RIGHT_BRACE; }
-","			{ return COMMA; }
-"-"			{ return MINUS; }
-"+"			{ return PLUS; }
-";"			{ return SEMICOLON; }
-"/"			{ return SLASH; }
-"*"			{ return STAR; }
-"!"			{ return BANG; }
-"!="		{ return BANG_EQUAL; }
-"="			{ return EQUAL; }
-"=="		{ return EQUAL_EQUAL; }
-">"			{ return GREATER; }
-">="		{ return GREATER_EQUAL; }
-"<"			{ return LESS; }
-"<="		{ return LESS_EQUAL; }
-<<EOF>>		{ return END; }
+"("			{ return parser::token::LEFT_PAREN; }
+")"			{ return parser::token::RIGHT_PAREN; }
+"{"			{ return parser::token::LEFT_BRACE; }
+"}"			{ return parser::token::RIGHT_BRACE; }
+","			{ return parser::token::COMMA; }
+"-"			{ return parser::token::MINUS; }
+"+"			{ return parser::token::PLUS; }
+";"			{ return parser::token::SEMICOLON; }
+"/"			{ return parser::token::SLASH; }
+"*"			{ return parser::token::STAR; }
+"!"			{ return parser::token::BANG; }
+"!="		{ return parser::token::BANG_EQUAL; }
+"="			{ return parser::token::EQUAL; }
+"=="		{ return parser::token::EQUAL_EQUAL; }
+">"			{ return parser::token::GREATER; }
+">="		{ return parser::token::GREATER_EQUAL; }
+"<"			{ return parser::token::LESS; }
+"<="		{ return parser::token::LESS_EQUAL; }
+<<EOF>>		{ return parser::token::YYEOF; }
 
 . {
-	return INVALID_CHARACTER;
+	return parser::token::INVALID_CHARACTER;
 }
 
 %%
