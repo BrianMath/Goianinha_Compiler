@@ -41,7 +41,7 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 
 %%
 
-[ \t\r\n]			/* Ignore whitespaces */
+[ \t\r\n]		/* Ignore whitespaces */
 
 {VALID_COMMENT} /* Ignore comments */
 

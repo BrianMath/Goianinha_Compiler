@@ -2,7 +2,6 @@
 #include <fstream>
 #include <stdlib.h>
 #include "include/FlexLexer.h"
-#include "include/Scanner.hpp"
 #include "include/goianinha.tab.hh"
 
 yyFlexLexer* scanner = nullptr;

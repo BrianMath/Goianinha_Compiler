@@ -2,32 +2,51 @@
 	#include <iostream>
 	#include <string>
 	#include "../include/FlexLexer.h"
-	#include "../include/Scanner.hpp"
 	#include "../include/goianinha.tab.hh"
+
+	extern yyFlexLexer* scanner;
 
 	// Handle lexical errors
 	int yylex(void* yylval) {
 		int token = scanner->yylex();
+		unsigned long long line = 0;
+		std::string txt = scanner->YYText();
 
 		switch (token) {
 			case yy::parser::token::UNTERMINATED_COMMENT:
-				std::cerr << "\033[0;33mERRO: COMENTÁRIO NÃO TERMINA na linha " << scanner->lineno() << "\033[0m\n";
+				for (auto c = txt.rbegin(); c != txt.rend(); c++) {
+					if (*c == '\n') {line++;}
+					else if (*c == '\r') {continue;}
+					else {break;}
+				}
+
+				std::cerr << "\033[0;33mERRO: COMENTÁRIO NÃO TERMINA na linha " 
+						  << scanner->lineno() - line << "\033[0m\n";
 				exit(EXIT_FAILURE);
-				break;
 			
 			case yy::parser::token::INVALID_CHARACTER:
 				std::cerr << "\033[0;33mERRO: CARACTERE INVÁLIDO na linha " << scanner->lineno() << "\033[0m\n";
-				std::cerr << "Lexema '" << scanner->YYText() << "'\n";
+				std::cerr << "Lexema '" << txt << "'\n";
 				exit(EXIT_FAILURE);
 				break;
 			
 			case yy::parser::token::INVALID_STRING:
-				std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " << scanner->lineno() << "\033[0m\n";
+				for (auto c : txt) {
+					if (c == '\n') {line++;}
+				}
+
+				std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " 
+						  << scanner->lineno() - line << "\033[0m\n";
 				exit(EXIT_FAILURE);
 				break;
 			
 			case yy::parser::token::UNTERMINATED_STRING:
-				std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES NÃO TERMINA na linha " << scanner->lineno() << "\033[0m\n";
+				for (auto c : txt) {
+					if (c == '\n') {line++;}
+				}
+				
+				std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES NÃO TERMINA na linha " 
+						  << scanner->lineno() - line << "\033[0m\n";
 				exit(EXIT_FAILURE);
 				break;
 			
@@ -186,10 +205,6 @@ ListExpr
 	;
 
 %%
-
-#include <iostream>
-#include <string>
-#include "../include/Scanner.hpp"
 
 namespace yy {
 	void parser::error(const std::string &msg) {

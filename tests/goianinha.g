@@ -5,4 +5,7 @@ escreva x; escreva " "; escreva y; escreva " "; escreva z;
 novalinha; 
 escreva x*2-y/4;
 }
+/* Olá,
+
+mundo!
 
