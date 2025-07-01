@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
-#include "include/FlexLexer.h"
-#include "include/goianinha.tab.hh"
+#include "../include/FlexLexer.h"
+#include "../include/goianinha.tab.hh"
 
 yyFlexLexer* scanner = nullptr;
 
@@ -25,12 +25,12 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	yy::parser parser_instance;
+	boi::parser parser_instance;
 	int result = parser_instance.parse();
-
 	delete scanner;
 	scanner = nullptr;
-	// Close the little goiânia file
+
+	// Close the litle goiânia file
 	input_file.close();
 
 	if (!result) {

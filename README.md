@@ -10,6 +10,29 @@ O compilador consiste em 3 partes:
 - ✅ Analisador Léxico e Tabela de Símbolos
 - ✅ Analisador Sintático e Tratamento de Erros
 - 🔁 Analisador Semântico e Geração de Código
+	- ✅ Criação da árvore sintática abstrata (AST)
+	- ⬜️ Análise semântica
+	- ⬜️ Geração de código
+
+## Como compilar
+Para compilar o compilador, você precisa ter o **make** instalado. Execute algum dos comandos abaixo no terminal:
+
+```bash
+# Comando para compilar os arquivos do compilador
+make all
+
+# Comando para rodar a main do compilador
+make run
+
+# Comando para criar a (AST) para um programa Goianinha de teste (tests/goianinha.g)
+make printer
+
+# Comando para imprimir a AST de um programa Goianinha de teste (tests/goianinha.g)
+make print
+
+# Comando para limpar os arquivos compilados
+make clean
+```
 
 ## Exemplo de código em Goianinha
 ```C

@@ -27,6 +27,11 @@ namespace AST {
 		NEGATIVE
 	};
 
+	class CommandNode;
+	class BlockNode;
+	class ExpressionNode;
+	class VariableDeclNode;
+
 	// Basic class for an AST node
 	class ASTNode {
 		public:
@@ -34,6 +39,8 @@ namespace AST {
 
 			ASTNode(int lineNum) : line(lineNum) {}
 			virtual ~ASTNode() = default;
+
+			virtual void print(int indent = 0) const = 0;
 	};
 
 	class ProgramNode : public ASTNode {
@@ -43,10 +50,11 @@ namespace AST {
 
 			ProgramNode(std::vector<std::unique_ptr<ASTNode>> decls, 
 						std::unique_ptr<BlockNode> main, int line)
-				: declarations(std::move(decls)),
-				  mainBlock(std::move(main)),
-				  ASTNode(line) {}
+				: ASTNode(line), 
+				  declarations(std::move(decls)),
+				  mainBlock(std::move(main)) {}
 			virtual ~ProgramNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Base class for commands
@@ -66,10 +74,11 @@ namespace AST {
 
 			BlockNode(std::vector<std::unique_ptr<VariableDeclNode>> listVar, 
 				  std::vector<std::unique_ptr<CommandNode>> cmds, int line)
-				: localVariables(std::move(listVar)),
-				  commands(std::move(cmds)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  localVariables(std::move(listVar)),
+				  commands(std::move(cmds)) {}
 			virtual ~BlockNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Simple expression command
@@ -78,9 +87,10 @@ namespace AST {
 			std::unique_ptr<ExpressionNode> expression;
 
 			ExpressionCommandNode(std::unique_ptr<ExpressionNode> expr, int line)
-				: expression(std::move(expr)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  expression(std::move(expr)) {}
 			virtual ~ExpressionCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Return command
@@ -89,9 +99,10 @@ namespace AST {
 			std::unique_ptr<ExpressionNode> returnExpression;
 
 			ReturnCommandNode(std::unique_ptr<ExpressionNode> retExpr, int line)
-				: returnExpression(std::move(retExpr)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  returnExpression(std::move(retExpr)) {}
 			virtual ~ReturnCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Read command
@@ -100,9 +111,10 @@ namespace AST {
 			std::string identifier;
 
 			ReadCommandNode(std::string id, int line) 
-				: identifier(std::move(id)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  identifier(std::move(id)) {}
 			virtual ~ReadCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Write command
@@ -111,14 +123,15 @@ namespace AST {
 			std::variant<std::unique_ptr<ExpressionNode>, std::string> outputValue;
 
 			WriteCommandNode(std::unique_ptr<ExpressionNode> val, int line)
-				: outputValue(std::move(val)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  outputValue(std::move(val)) {}
 			
 			WriteCommandNode(std::string val, int line)
-				: outputValue(std::move(val)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  outputValue(std::move(val)) {}
 
 			virtual ~WriteCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// If/else command
@@ -132,11 +145,12 @@ namespace AST {
 						  std::unique_ptr<CommandNode> thenCmd,
 						  std::unique_ptr<CommandNode> elseCmd,
 						  int line)
-				: condition(std::move(cond)),
+				: CommandNode(line),
+				  condition(std::move(cond)),
 				  thenCommand(std::move(thenCmd)),
-				  elseCommand(std::move(elseCmd)),
-				  CommandNode(line) {}
+				  elseCommand(std::move(elseCmd)) {}
 			virtual ~IfCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// While command
@@ -148,10 +162,11 @@ namespace AST {
 			WhileCommandNode(std::unique_ptr<ExpressionNode> cond,
 							 std::unique_ptr<CommandNode> cmd,
 							 int line)
-				: condition(std::move(cond)),
-				  body(std::move(cmd)),
-				  CommandNode(line) {}
+				: CommandNode(line),
+				  condition(std::move(cond)),
+				  body(std::move(cmd)) {}
 			virtual ~WhileCommandNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Variables declarations
@@ -161,10 +176,11 @@ namespace AST {
 			std::vector<std::string> identifiers;
 
 			VariableDeclNode(BasicType type, std::vector<std::string> ids, int line)
-				: variableType(type),
-				  identifiers(std::move(ids)),
-				  ASTNode(line) {}
+				: ASTNode(line),
+				  variableType(type),
+				  identifiers(std::move(ids)) {}
 			virtual ~VariableDeclNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Parameters declarations
@@ -174,10 +190,11 @@ namespace AST {
 			std::string identifier;
 
 			ParameterDeclNode(BasicType type, std::string id, int line)
-				: parameterType(type),
-				  identifier(std::move(id)),
-				  ASTNode(line) {}
+				: ASTNode(line),
+				  parameterType(type),
+				  identifier(std::move(id)) {}
 			virtual ~ParameterDeclNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Functions declarations
@@ -191,12 +208,13 @@ namespace AST {
 			FunctionDeclNode(BasicType type, std::string id,
 							 std::vector<std::unique_ptr<ParameterDeclNode>> params,
 							 std::unique_ptr<BlockNode> body, int line)
-				: returnType(type),
+				: ASTNode(line),
+				  returnType(type),
 				  identifier(std::move(id)),
 				  parameters(std::move(params)),
-				  functionBody(std::move(body)),
-				  ASTNode(line) {}
+				  functionBody(std::move(body)) {}
 			virtual ~FunctionDeclNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Base class for expressions
@@ -217,11 +235,12 @@ namespace AST {
 
 			BinaryOperationNode(std::unique_ptr<ExpressionNode> leftOpnd, Operator binOp,
 								std::unique_ptr<ExpressionNode> rightOpnd, int line)
-				: leftOperand(std::move(leftOpnd)),
+				: ExpressionNode(line),
+				  leftOperand(std::move(leftOpnd)),
 				  binaryOperator(binOp),
-				  rightOperand(std::move(rightOpnd)),
-				  ExpressionNode(line) {}
+				  rightOperand(std::move(rightOpnd)) {}
 			virtual ~BinaryOperationNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Expressions with unary operations
@@ -232,10 +251,11 @@ namespace AST {
 
 			UnaryOperationNode(Operator unOp, std::unique_ptr<ExpressionNode> rightOpnd,
 							   int line)
-				: unaryOperator(unOp),
-				  rightOperand(std::move(rightOpnd)),
-				  ExpressionNode(line) {}
+				: ExpressionNode(line),
+				  unaryOperator(unOp),
+				  rightOperand(std::move(rightOpnd)) {}
 			virtual ~UnaryOperationNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Expressions with assignment
@@ -245,10 +265,26 @@ namespace AST {
 			std::unique_ptr<ExpressionNode> value;
 
 			AssignNode(std::string id, std::unique_ptr<ExpressionNode> val, int line)
-				: identifier(std::move(id)),
-				  value(std::move(val)),
-				  ExpressionNode(line) {}
+				: ExpressionNode(line),
+				  identifier(std::move(id)),
+				  value(std::move(val)) {}
 			virtual ~AssignNode() = default;
+			void print(int indent = 0) const override;
+	};
+
+	// Function call expression
+	class FunctionCallNode : public ExpressionNode {
+		public:
+			std::string identifier;
+			std::vector<std::unique_ptr<AST::ExpressionNode>> arguments; // Optional
+
+			FunctionCallNode(std::string id, std::vector<std::unique_ptr<AST::ExpressionNode>> args, 
+							 int line)
+				: ExpressionNode(line),
+				  identifier(std::move(id)),
+				  arguments(std::move(args)) {}
+			virtual ~FunctionCallNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Identifier expression
@@ -257,9 +293,10 @@ namespace AST {
 			std::string identifier;
 
 			IdExpressionNode(std::string id, int line)
-				: identifier(std::move(id)),
-				  ExpressionNode(line) {}
+				: ExpressionNode(line),
+				  identifier(std::move(id)) {}
 			virtual ~IdExpressionNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Integer constant expression
@@ -268,9 +305,10 @@ namespace AST {
 			long long intconst;
 
 			IntConstNode(long long intLiteral, int line)
-				: intconst(intLiteral),
-				  ExpressionNode(line) {}
+				: ExpressionNode(line),
+				  intconst(intLiteral) {}
 			virtual ~IntConstNode() = default;
+			void print(int indent = 0) const override;
 	};
 
 	// Character constant expression
@@ -279,9 +317,10 @@ namespace AST {
 			char carconst;
 
 			CarConstNode(char carLiteral, int line)
-				: carconst(carLiteral),
-				  ExpressionNode(line) {}
+				: ExpressionNode(line),
+				  carconst(carLiteral) {}
 			virtual ~CarConstNode() = default;
+			void print(int indent = 0) const override;
 	};
 }
 

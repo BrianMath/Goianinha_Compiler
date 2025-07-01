@@ -5,7 +5,7 @@
 	#include <string>
 	#include "../include/goianinha.tab.hh"
 
-	using namespace yy;
+	using namespace boi;
 
 	std::map<std::string, parser::token_kind_type> keywords = {
 		{"programa", parser::token::PROGRAMA},
@@ -46,27 +46,52 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 {VALID_COMMENT} /* Ignore comments */
 
 {INVALID_COMMENT} {
-	return parser::token::UNTERMINATED_COMMENT;
+	unsigned long long line = 0;
+	std::string txt = YYText();
+
+	for (auto c = txt.rbegin(); c != txt.rend(); c++) {
+		if (*c == '\n') {line++;}
+		else if (*c == '\r') {continue;}
+		else {break;}
+	}
+
+	std::cerr << "\033[0;33mERRO: COMENTÁRIO NÃO TERMINA na linha " 
+			  << lineno() - line << "\033[0m\n";
+	exit(EXIT_FAILURE);
 }
 
 {VALID_NUMBER} {
 	return parser::token::INTCONST;
 }
 
-	/*{INVALID_NUMBER} {
-		return INVALID_NUMBER;
-	}*/
-
 {VALID_STRING} {
 	return parser::token::STRING;
 }
 
 {INVALID_STRING} {
-	return parser::token::INVALID_STRING;
+	unsigned long long line = 0;
+	std::string txt = YYText();
+
+	for (auto c : txt) {
+		if (c == '\n') {line++;}
+	}
+
+	std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha " 
+			  << lineno() - line << "\033[0m\n";
+	exit(EXIT_FAILURE);
 }
 
 {NO_END_STRING} {
-	return parser::token::UNTERMINATED_STRING;
+	unsigned long long line = 0;
+	std::string txt = YYText();
+
+	for (auto c : txt) {
+		if (c == '\n') {line++;}
+	}
+	
+	std::cerr << "\033[0;33mERRO: CADEIA DE CARACTERES NÃO TERMINA na linha " 
+			  << lineno() - line << "\033[0m\n";
+	exit(EXIT_FAILURE);
 }
 
 {ID} {
@@ -101,7 +126,11 @@ INVALID_COMMENT	\/\*([^\*]|\*+[^\*\/])*\**
 <<EOF>>		{ return parser::token::YYEOF; }
 
 . {
-	return parser::token::INVALID_CHARACTER;
+	std::string txt = YYText();
+
+	std::cerr << "\033[0;33mERRO: CARACTERE INVÁLIDO na linha " << lineno() << "\033[0m\n";
+	std::cerr << "Lexema '" << txt << "'\n";
+	exit(EXIT_FAILURE);
 }
 
 %%
