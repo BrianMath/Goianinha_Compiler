@@ -3,19 +3,19 @@ CXXFLAGS = -std=c++17 -Wall -I./include
 FLEX = flex
 BISON = bison
 
-all: goianinha
+all: src/goianinha
 
 # Gera o arquivo de código do lexer usando Flex
 src/lex.yy.cc: src/goianinha.l include/goianinha.tab.hh
 	$(FLEX) -+ -o src/lex.yy.cc src/goianinha.l
 
 # Gera o arquivo do código do parser usando Bison
-src/goianinha.tab.cc include/goianinha.tab.hh: src/goianinha.y
+src/goianinha.tab.cc: src/goianinha.y
 	$(BISON) -d --defines=include/goianinha.tab.hh -o src/goianinha.tab.cc src/goianinha.y
 
 # Regra para compilar o executável principal
-goianinha: src/Main.cpp src/goianinha.tab.cc src/lex.yy.cc
-	$(CXX) $(CXXFLAGS) $^ -o src/goianinha
+src/goianinha: src/Main.cpp src/goianinha.tab.cc src/lex.yy.cc
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 printer: src/printer.cpp
 	$(CXX) $(CXXFLAGS) $^ -o src/printer
